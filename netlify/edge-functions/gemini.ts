@@ -88,15 +88,14 @@ export default async (req: Request): Promise<Response> => {
 
   } catch (error) {
     console.error("Error in Netlify function:", error);
-    const detail = error instanceof Error ? error.message : "L'objet d'erreur n'est pas une instance d'Error.";
-
+    
     if (typeof error === 'object' && error !== null && 'message' in error) {
         return new Response(JSON.stringify({ error: `Erreur de l'API Gemini: ${error.message}` }), {
             status: 500, headers: { "Content-Type": "application/json" }
         });
     }
     
-    return new Response(JSON.stringify({ error: `Une erreur interne est survenue dans la fonction serveur. Détail: ${detail}` }), {
+    return new Response(JSON.stringify({ error: `Une erreur interne est survenue dans la fonction serveur.` }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
