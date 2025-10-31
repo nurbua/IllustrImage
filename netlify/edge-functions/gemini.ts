@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "npm:@google/genai";
+import { GoogleGenAI } from "https://esm.sh/@google/genai";
 
 // Déclaration pour que TypeScript reconnaisse l'objet Deno disponible dans l'environnement Netlify.
 declare const Deno: {
