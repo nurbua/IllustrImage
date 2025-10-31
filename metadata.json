@@ -1,0 +1,5 @@
+{
+  "name": "Enrichissez votre image",
+  "description": "Une application web qui utilise l'IA de Gemini pour enrichir vos images. Générez des poèmes, des citations, des titres et des légendes inspirés par vos photos.",
+  "requestFramePermissions": []
+}

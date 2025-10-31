@@ -167,3 +167,33 @@ export const generateCaptionFromImage = async (
         throw new Error("Une erreur inconnue est survenue lors de la génération de la légende.");
     }
 };
+
+export const generateLiteraryTextFromImage = async (
+  imageFile: File
+): Promise<string> => {
+  if (!process.env.API_KEY) {
+    throw new Error("La variable d'environnement API_KEY n'est pas configurée.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const model = 'gemini-2.5-flash';
+
+  const imagePart = await fileToGenerativePart(imageFile);
+  const textPart = {
+    text: "Agis comme un expert en littérature mondiale. En te basant sur l'image fournie, trouve un ou plusieurs extraits de textes littéraires (romans, nouvelles, essais) d'auteurs du monde entier qui entrent en résonance avec le thème, l'ambiance ou les éléments de l'image. Les extraits doivent être en français. Si un extrait original est dans une autre langue, fournis une traduction française de haute qualité. Pour chaque extrait, fournis le texte entre guillemets, puis sur une nouvelle ligne l'auteur préfixé par '— ', et sur une autre nouvelle ligne le titre de l'oeuvre en italique. Sépare chaque bloc (extrait/auteur/titre) du suivant par '---'. Ne génère que les extraits, titres et auteurs, sans introduction ni conclusion.",
+  };
+
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: { parts: [imagePart, textPart] },
+    });
+    return response.text;
+  } catch (error) {
+    console.error("Error calling Gemini API:", error);
+    if (error instanceof Error) {
+        throw new Error(`Une erreur est survenue lors de la communication avec l'API : ${error.message}`);
+    }
+    throw new Error("Une erreur inconnue est survenue lors de la génération des textes littéraires.");
+  }
+};

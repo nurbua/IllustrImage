@@ -1,12 +1,16 @@
+
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { PoemType } from './types';
 import { POEM_TYPES } from './constants';
-import { generatePoemFromImage, generateQuotesFromImage, generateTitleFromImage, generateCaptionFromImage } from './services/geminiService';
+import { generatePoemFromImage, generateQuotesFromImage, generateTitleFromImage, generateCaptionFromImage, generateLiteraryTextFromImage } from './services/geminiService';
 
-const logoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAA1wSURBVHja7J15nFzV+8/PvdvMTG9mPknmk0xCEsmsCSQhAQkBYSCQYwJzwDkYj8fj2Xv23ntv2Zt9fE0YCDkGZ8GBA3sDkkBCSDYhk8xMMm9m+vP7o6q7p5uZXtK7p/v9fF6e6q6qrp6+66v+9a5fvWsdhBAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRA-axw, -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AfwF/AX4DfgN+A/4DfgH8BvwH/AX8BvwH/AV8BPwF/Af8B/wD/AV8BnwHfAP8BPwH/Ab8CfgL+Av4A/AP4DPgL+An4CfgL+AP4CvgH+An4DfgN+A/wA/gJ+A/wC/gH+A3wC/gL+AX4DfgH+An4DfgP+An4C/AP4CvgH+Av4DfgJ+BvwB/AP4BPgN+BvwF/Af8BPwD/AF8BvwG/APwF/Af4DfgP+AX4D/AF8BnwG/AH8AvgH+AnwC/AH4C/AH8BfgL8BfgN+BfwG/AvwB/An8BvgJ+AXwBfAXwG/AH4AvgF/Av4C/AX4A/gF+A/4A/AL8CfgP+APwG/AH8A/wB/A/4AvgH+AvwD+APwC/An4B/AH8CfgL+APwG/An4B/AL8BPwD+APwC/AfwA/gL8BfwF+AfwBfAP4CfgP+AvwD+An4C/AH8BfgP+Av4CfgH+AvwB/An4BfAnwA/gF8CfgH+BfwD+BvgP+AfwGfAHwGfAn8B/AnwH/AX4C/CXwD/AH8F/AH4S/h//z/3F0CIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIg-CIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgCIIgC"
+declare const ExifReader: any;
+
+const logoBase64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDk2IDk2Ij4KICA8Y2lyY2xlIGN4PSI0OCIgY3k9IjQ4IiByPSI0NiIgZmlsbD0iIzYzNjZmMSIgLz4KICA8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkNvcm1vcmFudCBHYXJhbW9uZCwgc2VyaWYiIGZvbnQtc2l6ZT0iNTAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSI+CiAgICBBTQogIDwvdGV4dD4KPC9zdmc+Cg==";
 
 const PhotoIcon = () => (
-  <svg xmlns="http://www.w.org/2000/svg" className="h-12 w-12 text-slate-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-slate-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
   </svg>
 );
@@ -32,6 +36,31 @@ const TitleIcon = () => (
 const CaptionIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
         <path fillRule="evenodd" d="M2 5a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zm0 6a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zm1 5a1 1 0 100 2h10a1 1 0 100-2H3z" clipRule="evenodd" />
+    </svg>
+);
+
+const BookIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0114.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" />
+    </svg>
+);
+
+const InfoIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${className}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
+
+
+const CopyIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+    </svg>
+);
+
+const CheckIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
 );
 
@@ -117,16 +146,36 @@ interface ContentDisplayProps {
     content: string | null;
     isLoading: boolean;
     error: string | null;
-    contentType: 'poem' | 'quote' | 'title' | 'caption' | null;
+    contentType: 'poem' | 'quote' | 'title' | 'caption' | 'literaryText' | null;
 }
 
 const ContentDisplay: React.FC<ContentDisplayProps> = ({ content, isLoading, error, contentType }) => {
+    const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
+
+    const handleCopy = useCallback(() => {
+        if (!content || copyStatus === 'copied') return;
+
+        let textToCopy = content;
+        if (contentType === 'quote' || contentType === 'literaryText') {
+            // Format for better plain text representation
+            textToCopy = content.split('---').map(block => block.trim()).join('\n\n');
+        }
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            setCopyStatus('copied');
+            const timer = setTimeout(() => setCopyStatus('idle'), 2000);
+            return () => clearTimeout(timer);
+        }).catch(err => {
+            console.error("Échec de la copie du texte : ", err);
+        });
+    }, [content, contentType, copyStatus]);
     
     const contentTitles: { [key: string]: string } = {
         poem: 'Poème Inspiré',
         quote: 'Citations Pertinentes',
         title: 'Titre Suggéré',
-        caption: 'Légende Proposée'
+        caption: 'Légende Proposée',
+        literaryText: 'Textes Littéraires en Résonance'
     };
 
     const renderContent = () => {
@@ -156,25 +205,27 @@ const ContentDisplay: React.FC<ContentDisplayProps> = ({ content, isLoading, err
         
         const title = contentType ? contentTitles[contentType] : '';
 
-        if (contentType === 'quote') {
-            const quotesBlocks = content.split('---').filter(block => block.trim() !== '');
+        if (contentType === 'quote' || contentType === 'literaryText') {
+            const blocks = content.split('---').filter(block => block.trim() !== '');
             return (
                 <div className="w-full">
                     <h2 className="text-2xl font-bold font-serif-display text-slate-800 dark:text-slate-100 mb-4">{title}</h2>
                     <div className="space-y-4 text-left">
-                        {quotesBlocks.map((block, index) => {
+                        {blocks.map((block, index) => {
                             const parts = block.trim().split('\n');
-                            const text = parts[0].trim();
+                            const text = parts[0].trim().replace(/^"|"$/g, '');
                             const author = parts.length > 1 ? parts[1].trim() : null;
+                            const workTitle = contentType === 'literaryText' && parts.length > 2 ? parts[2].trim() : null;
 
                             return (
-                                <blockquote key={index} className={`p-4 rounded-lg border-l-4 border-teal-500 dark:border-teal-400 transition-colors duration-300 ${index % 2 === 0 ? 'bg-slate-100 dark:bg-gray-700' : 'bg-slate-50 dark:bg-gray-700/50'}`}>
+                                <blockquote key={index} className={`p-4 rounded-lg border-l-4 ${contentType === 'quote' ? 'border-teal-500 dark:border-teal-400' : 'border-amber-500 dark:border-amber-400'} transition-colors duration-300 ${index % 2 === 0 ? 'bg-slate-100 dark:bg-gray-700' : 'bg-slate-50 dark:bg-gray-700/50'}`}>
                                     <p className="italic text-lg text-slate-800 dark:text-slate-200">
                                         “{text}”
                                     </p>
-                                    {author && (
+                                    {(author || workTitle) && (
                                         <footer className="mt-2 text-right text-slate-600 dark:text-slate-400 font-medium">
                                             {author}
+                                            {workTitle && <cite className="block not-italic text-sm">{workTitle}</cite>}
                                         </footer>
                                     )}
                                 </blockquote>
@@ -196,8 +247,139 @@ const ContentDisplay: React.FC<ContentDisplayProps> = ({ content, isLoading, err
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg h-full min-h-[400px] flex flex-col justify-center items-center">
-            {renderContent()}
+        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg h-full min-h-[400px] flex flex-col justify-center items-center relative">
+            {content && !isLoading && !error && (
+                <div className="absolute top-4 right-4 z-10">
+                    <button
+                        onClick={handleCopy}
+                        disabled={copyStatus === 'copied'}
+                        className={`flex items-center justify-center px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm ${
+                            copyStatus === 'copied' 
+                            ? 'bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 cursor-default' 
+                            : 'bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-gray-600'
+                        }`}
+                        aria-label={copyStatus === 'copied' ? 'Texte copié' : 'Copier le texte'}
+                    >
+                        {copyStatus === 'copied' ? (
+                            <>
+                                <CheckIcon className="h-5 w-5 mr-2" />
+                                <span>Copié!</span>
+                            </>
+                        ) : (
+                             <>
+                                <CopyIcon className="h-5 w-5 mr-2" />
+                                <span>Copier</span>
+                             </>
+                        )}
+                    </button>
+                </div>
+            )}
+            <div className="w-full h-full flex flex-col justify-center items-center">
+                {renderContent()}
+            </div>
+        </div>
+    );
+};
+
+const ExifModal: React.FC<{ isOpen: boolean; onClose: () => void; exifData: any | null }> = ({ isOpen, onClose, exifData }) => {
+    if (!isOpen) return null;
+
+    const convertDMSToDD = (dms: number[], ref: string): number => {
+        if (!Array.isArray(dms) || dms.length < 3) return NaN;
+        const [degrees, minutes, seconds] = dms;
+        if (typeof degrees !== 'number' || typeof minutes !== 'number' || typeof seconds !== 'number') {
+            return NaN;
+        }
+        let dd = degrees + minutes / 60 + seconds / 3600;
+        if (ref === 'S' || ref === 'W') {
+            dd = dd * -1;
+        }
+        return dd;
+    };
+
+    const renderContent = () => {
+        if (!exifData) {
+            return (
+                <div className="text-center text-slate-600 dark:text-slate-400 py-8">
+                    <InfoIcon className="h-10 w-10 mx-auto !mr-0 mb-4 text-slate-400 dark:text-gray-500" />
+                    <p>Aucune donnée EXIF détaillée n'a été trouvée pour cette image.</p>
+                </div>
+            );
+        }
+
+        const make = exifData.Make?.description || 'Non disponible';
+        const exposureTime = exifData.ExposureTime?.description || 'Non disponible';
+        const iso = exifData.ISOSpeedRatings?.description || 'Non disponible';
+        let googleMapsUrl: string | null = null;
+
+        try {
+            const latRef = exifData.GPSLatitudeRef?.value?.[0];
+            const lonRef = exifData.GPSLongitudeRef?.value?.[0];
+
+            if (exifData.GPSLatitude?.value && exifData.GPSLongitude?.value && latRef && lonRef) {
+                const lat = convertDMSToDD(exifData.GPSLatitude.value, latRef);
+                const lon = convertDMSToDD(exifData.GPSLongitude.value, lonRef);
+
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                }
+            }
+        } catch (e) {
+            console.error("Error processing EXIF GPS data:", e);
+            googleMapsUrl = null;
+        }
+
+        return (
+            <div className="space-y-3 text-slate-700 dark:text-slate-300">
+                <div className="flex justify-between border-b border-slate-200 dark:border-gray-700 py-2">
+                    <span className="font-semibold">Marque :</span>
+                    <span>{make}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 dark:border-gray-700 py-2">
+                    <span className="font-semibold">Vitesse d'obturation :</span>
+                    <span>{exposureTime}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 dark:border-gray-700 py-2">
+                    <span className="font-semibold">Sensibilité ISO :</span>
+                    <span>{iso}</span>
+                </div>
+                {googleMapsUrl && (
+                    <div className="pt-4 text-center">
+                        <a
+                            href={googleMapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                            Voir sur Google Maps
+                        </a>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    return (
+        <div
+            className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 transition-opacity duration-300"
+            onClick={onClose}
+            aria-modal="true"
+            role="dialog"
+        >
+            <div
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 w-full max-w-md transform transition-transform duration-300 scale-100"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold font-serif-display text-slate-800 dark:text-slate-100">Détails (EXIF)</h2>
+                    <button onClick={onClose} className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" aria-label="Fermer">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                {renderContent()}
+            </div>
         </div>
     );
 };
@@ -208,10 +390,12 @@ export default function App() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [poemType, setPoemType] = useState<PoemType>(PoemType.VERS_LIBRES);
     const [generatedContent, setGeneratedContent] = useState<string | null>(null);
-    const [contentType, setContentType] = useState<'poem' | 'quote' | 'title' | 'caption' | null>(null);
+    const [contentType, setContentType] = useState<'poem' | 'quote' | 'title' | 'caption' | 'literaryText' | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [activeAction, setActiveAction] = useState<'poem' | 'quote' | 'title' | 'caption' | null>(null);
+    const [activeAction, setActiveAction] = useState<'poem' | 'quote' | 'title' | 'caption' | 'literaryText' | null>(null);
+    const [exifData, setExifData] = useState<any | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             return 'dark';
@@ -231,12 +415,32 @@ export default function App() {
         setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
     };
 
+    const parseExifData = async (file: File) => {
+        try {
+            const tags = await ExifReader.load(file);
+            delete tags['MakerNote'];
+            
+            // Explicitly check if the tags object has any meaningful keys.
+            if (tags && Object.keys(tags).length > 0) {
+                setExifData(tags);
+            } else {
+                // If no tags or empty object, ensure exifData is null.
+                setExifData(null);
+            }
+        } catch (error) {
+            console.error("Could not read EXIF data:", error);
+            setExifData(null);
+        }
+    };
+    
+
     const handleFileSelect = useCallback((file: File) => {
         setImageFile(file);
         setImagePreview(URL.createObjectURL(file));
         setGeneratedContent(null);
         setError(null);
         setContentType(null);
+        parseExifData(file);
     }, []);
     
     const handleReset = () => {
@@ -247,6 +451,7 @@ export default function App() {
         setContentType(null);
         setIsLoading(false);
         setActiveAction(null);
+        setExifData(null);
     };
 
 
@@ -362,6 +567,34 @@ export default function App() {
         }
     };
 
+    const handleGenerateLiteraryText = async () => {
+        if (!imageFile) {
+            setError("Veuillez d'abord sélectionner une image.");
+            return;
+        }
+
+        setIsLoading(true);
+        setActiveAction('literaryText');
+        setError(null);
+        setGeneratedContent(null);
+        setContentType('literaryText');
+
+        try {
+            const text = await generateLiteraryTextFromImage(imageFile);
+            setGeneratedContent(text);
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError("Une erreur inattendue est survenue.");
+            }
+            setContentType(null);
+        } finally {
+            setIsLoading(false);
+            setActiveAction(null);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-100 dark:bg-gray-900 p-4 sm:p-6 lg:p-8 transition-colors duration-300">
             <div className="max-w-7xl mx-auto relative">
@@ -376,8 +609,8 @@ export default function App() {
                    <div className="flex flex-col justify-center items-center gap-4">
                         <img src={logoBase64} alt="Logo AM" className="h-24 w-24" />
                         <div>
-                            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white font-serif-display">Illustrer Votre Image</h1>
-                            <p className="mt-2 text-lg text-slate-600 dark:text-slate-400">Ajoutez un poème Ou une citation</p>
+                            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white font-serif-display">Enrichissez votre image</h1>
+                            <p className="mt-2 text-lg text-slate-600 dark:text-slate-400">Ajoutez un poème, une citation, un titre ou une légende</p>
                         </div>
                    </div>
                 </header>
@@ -446,13 +679,32 @@ export default function App() {
                                             </button>
                                         </div>
                                     </div>
+                                    <div className="p-4 border border-slate-200 dark:border-gray-700 rounded-lg space-y-4 flex flex-col justify-between">
+                                        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Explorer la Littérature</h2>
+                                        <button
+                                            onClick={handleGenerateLiteraryText}
+                                            disabled={isLoading}
+                                            className="w-full flex items-center justify-center bg-amber-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-amber-700 disabled:bg-slate-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                                        >
+                                            <BookIcon />
+                                            {isLoading && activeAction === 'literaryText' ? 'Recherche...' : 'Obtenir des textes littéraires'}
+                                        </button>
+                                    </div>
                                 </div>
-                                 <div className="pt-4">
+                                 <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <button
                                         onClick={handleReset}
                                         className="w-full flex items-center justify-center bg-gray-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
                                     >
                                         Changer d'image
+                                    </button>
+                                     <button
+                                        onClick={() => setIsModalOpen(true)}
+                                        title={"Afficher les détails de l'image (EXIF)"}
+                                        className="w-full flex items-center justify-center bg-purple-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-purple-700 disabled:bg-slate-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                                    >
+                                        <InfoIcon />
+                                        Détails
                                     </button>
                                 </div>
                             </div>
@@ -463,6 +715,7 @@ export default function App() {
                         <ContentDisplay content={generatedContent} isLoading={isLoading} error={error} contentType={contentType} />
                     </div>
                 </main>
+                <ExifModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} exifData={exifData} />
             </div>
         </div>
     );
