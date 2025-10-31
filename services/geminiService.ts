@@ -1,5 +1,3 @@
-import { PoemType } from '../types';
-
 const getMimeType = (file: File): string => {
     if (file.type) {
       return file.type;
@@ -29,7 +27,7 @@ const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-const callGeminiFunction = async (payload: object): Promise<string> => {
+const callGeminiFunction = async (payload: object): Promise<any> => {
     // On appelle notre fonction Netlify à l'URL '/gemini'
     const response = await fetch('/gemini', {
         method: 'POST',
@@ -50,62 +48,65 @@ const callGeminiFunction = async (payload: object): Promise<string> => {
         throw new Error(data.error || "Une erreur est survenue lors de la communication avec le serveur.");
     }
 
-    return data.text;
+    return data;
 }
 
-export const generatePoemFromImage = async (
-  imageFile: File,
-  poemType: PoemType
+export const transformImageToWatercolor = async (
+  imageFile: File
 ): Promise<string> => {
   const imageData = await fileToBase64(imageFile);
-  return callGeminiFunction({
+  const data = await callGeminiFunction({
       imageData,
       mimeType: getMimeType(imageFile),
-      action: 'generatePoem',
-      poemType,
+      action: 'transformToWatercolor',
   });
+  return data.base64Image;
 };
 
 export const generateQuotesFromImage = async (
   imageFile: File
 ): Promise<string> => {
   const imageData = await fileToBase64(imageFile);
-  return callGeminiFunction({
+  const data = await callGeminiFunction({
       imageData,
       mimeType: getMimeType(imageFile),
       action: 'generateQuotes',
   });
+  return data.text;
 };
 
 export const generateTitleFromImage = async (
     imageFile: File
 ): Promise<string> => {
     const imageData = await fileToBase64(imageFile);
-    return callGeminiFunction({
+    const data = await callGeminiFunction({
         imageData,
         mimeType: getMimeType(imageFile),
         action: 'generateTitle',
     });
+    return data.text;
 };
 
 export const generateCaptionFromImage = async (
     imageFile: File
 ): Promise<string> => {
     const imageData = await fileToBase64(imageFile);
-    return callGeminiFunction({
+    const data = await callGeminiFunction({
         imageData,
         mimeType: getMimeType(imageFile),
         action: 'generateCaption',
     });
+    return data.text;
 };
 
 export const generateLiteraryTextFromImage = async (
   imageFile: File
 ): Promise<string> => {
     const imageData = await fileToBase64(imageFile);
-    return callGeminiFunction({
+    const data = await callGeminiFunction({
         imageData,
         mimeType: getMimeType(imageFile),
         action: 'generateLiteraryText',
     });
+    return data.text;
 };

@@ -30,7 +30,7 @@ export default async (req: Request): Promise<Response> => {
     }
 
     // Analyser le corps de la requête envoyée depuis le frontend
-    const { imageData, mimeType, action, poemType } = await req.json();
+    const { imageData, mimeType, action } = await req.json();
     if (!imageData || !mimeType || !action) {
         return new Response(JSON.stringify({ error: "Données de requête invalides." }), {
           status: 400,
@@ -39,8 +39,7 @@ export default async (req: Request): Promise<Response> => {
     }
 
     const ai = new GoogleGenAI({ apiKey });
-    const model = 'gemini-2.5-flash';
-
+    
     const imagePart = {
       inlineData: {
         data: imageData,
@@ -48,43 +47,91 @@ export default async (req: Request): Promise<Response> => {
       },
     };
 
-    let textPrompt = "";
-
     // Déterminer le bon prompt en fonction de l'action
     switch (action) {
-      case 'generatePoem':
-        textPrompt = `Agis comme un poète expert. En te basant sur l'image fournie, écris un poème en français sous la forme d'un "${poemType}". Le poème doit être émouvant, créatif et capturer l'essence de l'image. Ne génère que le texte du poème, sans introduction ni conclusion.`;
-        break;
-      case 'generateQuotes':
-        textPrompt = "Agis comme un expert littéraire. En te basant sur l'image fournie, fournis une liste de 3 à 5 citations pertinentes d'auteurs célèbres qui résonnent avec le thème, l'ambiance ou les objets de l'image. Les citations doivent être en français. Si une citation originale est dans une autre langue, fournis une traduction française de haute qualité. Pour chaque citation, mentionne l'auteur sur une nouvelle ligne en le préfixant par '— '. Sépare chaque bloc citation/auteur du suivant par '---'. Ne génère que les citations et leurs auteurs, sans introduction ni conclusion.";
-        break;
-      case 'generateTitle':
-        textPrompt = "Agis comme un expert en titrage créatif. En te basant sur l'image fournie, génère un titre court, évocateur et pertinent en français. Le titre ne doit pas dépasser 5 mots. Ne génère que le texte du titre, sans introduction ni conclusion.";
-        break;
-      case 'generateCaption':
-        textPrompt = "Agis comme un expert des réseaux sociaux. En te basant sur l'image fournie, écris une légende descriptive et captivante en français, idéale pour une plateforme comme Instagram. La légende doit faire entre 1 et 3 phrases. Ne génère que le texte de la légende, sans introduction ni conclusion.";
-        break;
-      case 'generateLiteraryText':
-        textPrompt = "Agis comme un expert en littérature mondiale. En te basant sur l'image fournie, trouve un ou plusieurs extraits de textes littéraires (romans, nouvelles, essais) d'auteurs du monde entier qui entrent en résonance avec le thème, l'ambiance ou les éléments de l'image. Les extraits doivent être en français. Si un extrait original est dans une autre langue, fournis une traduction française de haute qualité. Pour chaque extrait, fournis le texte entre guillemets, puis sur une nouvelle ligne l'auteur préfixé par '— ', et sur une autre nouvelle ligne le titre de l'oeuvre en italique. Sépare chaque bloc (extrait/auteur/titre) du suivant par '---'. Ne génère que les extraits, titres et auteurs, sans introduction ni conclusion.";
-        break;
+      case 'transformToWatercolor': {
+        const textPart = { text: "Transforme cette image en une peinture à l'aquarelle de haute qualité." };
+        const geminiResponse = await ai.models.generateContent({
+          model: 'gemini-2.5-flash-image',
+          contents: { parts: [imagePart, textPart] },
+          config: {
+              responseModalities: ['IMAGE'],
+          },
+        });
+        
+        let base64Image = '';
+        if (geminiResponse.candidates?.[0]?.content?.parts) {
+            for (const part of geminiResponse.candidates[0].content.parts) {
+                if (part.inlineData && part.inlineData.mimeType.startsWith('image/')) {
+                    base64Image = part.inlineData.data;
+                    break;
+                }
+            }
+        }
+
+        if (!base64Image) {
+            throw new Error("L'IA n'a pas pu générer d'image.");
+        }
+
+        return new Response(JSON.stringify({ base64Image }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      case 'generateQuotes': {
+        const textPrompt = "Agis comme un expert littéraire. En te basant sur l'image fournie, fournis une liste de 3 à 5 citations pertinentes d'auteurs célèbres qui résonnent avec le thème, l'ambiance ou les objets de l'image. Les citations doivent être en français. Si une citation originale est dans une autre langue, fournis une traduction française de haute qualité. Pour chaque citation, mentionne l'auteur sur une nouvelle ligne en le préfixant par '— '. Sépare chaque bloc citation/auteur du suivant par '---'. Ne génère que les citations et leurs auteurs, sans introduction ni conclusion.";
+        const textPart = { text: textPrompt };
+        const geminiResponse = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: { parts: [imagePart, textPart] },
+        });
+        return new Response(JSON.stringify({ text: geminiResponse.text }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      case 'generateTitle': {
+        const textPrompt = "Agis comme un expert en titrage créatif. En te basant sur l'image fournie, génère un titre court, évocateur et pertinent en français. Le titre ne doit pas dépasser 5 mots. Ne génère que le texte du titre, sans introduction ni conclusion.";
+        const textPart = { text: textPrompt };
+        const geminiResponse = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: { parts: [imagePart, textPart] },
+        });
+        return new Response(JSON.stringify({ text: geminiResponse.text }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      case 'generateCaption': {
+        const textPrompt = "Agis comme un expert des réseaux sociaux. En te basant sur l'image fournie, écris une légende descriptive et captivante en français, idéale pour une plateforme comme Instagram. La légende doit faire entre 1 et 3 phrases. Ne génère que le texte de la légende, sans introduction ni conclusion.";
+        const textPart = { text: textPrompt };
+        const geminiResponse = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: { parts: [imagePart, textPart] },
+        });
+        return new Response(JSON.stringify({ text: geminiResponse.text }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      case 'generateLiteraryText': {
+        const textPrompt = "Agis comme un expert en littérature mondiale. En te basant sur l'image fournie, trouve un ou plusieurs extraits de textes littéraires (romans, nouvelles, essais) d'auteurs du monde entier qui entrent en résonance avec le thème, l'ambiance ou les éléments de l'image. Les extraits doivent être en français. Si un extrait original est dans une autre langue, fournis une traduction française de haute qualité. Pour chaque extrait, fournis le texte entre guillemets, puis sur une nouvelle ligne l'auteur préfixé par '— ', et sur une autre nouvelle ligne le titre de l'oeuvre en italique. Sépare chaque bloc (extrait/auteur/titre) du suivant par '---'. Ne génère que les extraits, titres et auteurs, sans introduction ni conclusion.";
+        const textPart = { text: textPrompt };
+        const geminiResponse = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: { parts: [imagePart, textPart] },
+        });
+        return new Response(JSON.stringify({ text: geminiResponse.text }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
       default:
         return new Response(JSON.stringify({ error: "Action non reconnue." }), {
           status: 400,
           headers: { "Content-Type": "application/json" },
         });
     }
-    
-    const textPart = { text: textPrompt };
-
-    const geminiResponse = await ai.models.generateContent({
-      model: model,
-      contents: { parts: [imagePart, textPart] },
-    });
-
-    return new Response(JSON.stringify({ text: geminiResponse.text }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
 
   } catch (error) {
     console.error("Error in Netlify function:", error);
